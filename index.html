@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Digital Signature</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f9;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+            .container {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                text-align: center;
+                width: 80%;
+                max-width: 600px;
+            }
+            h1 {
+                color: #333;
+            }
+            textarea {
+                width: 100%;
+                height: 100px;
+                margin: 10px 0;
+            }
+            button {
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                margin: 5px;
+            }
+            button:hover {
+                background-color: #0056b3;
+            }
+            .output {
+                word-wrap: break-word;
+                white-space: pre-wrap;
+                text-align: left;
+                margin-top: 10px;
+                background-color: #f9f9f9;
+                padding: 10px;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Digital Signature</h1>
+            <textarea id="data" placeholder="Enter data to sign"></textarea>
+            <br />
+            <button onclick="signData()">Sign Data</button>
+            <button onclick="verifyData()">Verify Data</button>
+            <div id="signature" class="output"></div>
+            <div id="verification" class="output"></div>
+        </div>
+        <script>
+            async function signData() {
+                const data = document.getElementById("data").value;
+                const response = await fetch("/sign", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ data }),
+                });
+                const result = await response.json();
+                document.getElementById("signature").innerText = "Signature: " + result.signature;
+            }
+
+            async function verifyData() {
+                const data = document.getElementById("data").value;
+                const signature = document.getElementById("signature").innerText.replace("Signature: ", "");
+                const response = await fetch("/verify", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ data, signature }),
+                });
+                const result = await response.json();
+                document.getElementById("verification").innerText = "Signature valid: " + result.isValid;
+            }
+        </script>
+    </body>
+</html>
